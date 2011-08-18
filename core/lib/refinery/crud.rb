@@ -69,6 +69,9 @@ module Refinery
               })
             end
 
+            params[:#{singular_name}].merge!({ :locale => params[:locale] })
+            
+
             if (@#{singular_name} = #{class_name}.create(params[:#{singular_name}])).valid?
               (request.xhr? ? flash.now : flash).notice = t(
                 'refinery.crudify.created',
@@ -106,6 +109,8 @@ module Refinery
           end
 
           def update
+            params[:#{singular_name}].merge!({ :locale => params[:locale] })
+            
             if @#{singular_name}.update_attributes(params[:#{singular_name}])
               (request.xhr? ? flash.now : flash).notice = t(
                 'refinery.crudify.updated',
@@ -150,17 +155,27 @@ module Refinery
 
           # Finds one single result based on the id params.
           def find_#{singular_name}
-            @#{singular_name} = #{class_name}.find(params[:id],
-                                                   :include => #{options[:include].map(&:to_sym).inspect})
+            if #{class_name}.respond_to?(:with_translations)              
+              @#{singular_name} = #{class_name}.with_translations.find(params[:id],
+                            :include => #{options[:include].map(&:to_sym).inspect})
+            else
+               @#{singular_name} = #{class_name}.find(params[:id],
+                              :include => #{options[:include].map(&:to_sym).inspect})
+            end
           end
 
           # Find the collection of @#{plural_name} based on the conditions specified into crudify
           # It will be ordered based on the conditions specified into crudify
           # And eager loading is applied as specified into crudify.
           def find_all_#{plural_name}(conditions = #{options[:conditions].inspect})
-            @#{plural_name} = #{class_name}.where(conditions).includes(
-                                #{options[:include].map(&:to_sym).inspect}
-                              ).order("#{options[:order]}")
+             if #{class_name}.respond_to?(:with_translations)
+               @#{plural_name} = #{class_name}.with_translations.where(conditions)
+                              .order("#{options[:order]}")
+             else
+               @#{plural_name} = #{class_name}.where(conditions)
+                              .includes(#{options[:include].map(&:to_sym).inspect})
+                              .order("#{options[:order]}")
+             end
           end
 
           # Paginate a set of @#{plural_name} that may/may not already exist.
