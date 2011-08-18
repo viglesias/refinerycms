@@ -30,16 +30,17 @@ module Admin
       unless action_name.to_s == 'index'
         super
         # Check whether we need to override e.g. on the pages form.
-        unless params[:switch_locale] || @page.nil? || @page.new_record? || @page.slugs.where({
-          :locale => Refinery::I18n.current_locale
-        }).nil?
+        #unless params[:switch_locale] || @page.nil? || @page.new_record? || @page.slugs.where({
+        #  :locale => Refinery::I18n.current_locale
+        #}).nil?
         
-          @page.slug = @page.slugs.first if @page.slug.nil? && @page.slugs.any?
-          Thread.current[:globalize_locale] = ::Refinery::I18n.current_locale
-        end
+        #  debugger
+        #  @page.slug = @page.slugs.first if @page.slug.nil? && @page.slugs.any?
+        Thread.current[:globalize_locale] = ::Refinery::I18n.current_locale
+        # end
       else
         # Always display the tree of pages from the default frontend locale.
-        Thread.current[:globalize_locale] = params[:switch_locale].try(:to_sym) || ::Refinery::I18n.current_locale
+        Thread.current[:globalize_locale] = ::Refinery::I18n.current_locale
       end
     end
 
