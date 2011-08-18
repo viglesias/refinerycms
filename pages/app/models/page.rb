@@ -184,15 +184,16 @@ class Page < ActiveRecord::Base
   end
 
   def link_url_localised?
-    return link_url unless ::Refinery.i18n_enabled?
-
-    current_url = link_url
-
-    if current_url =~ %r{^/} && ::Refinery::I18n.current_frontend_locale != ::Refinery::I18n.default_frontend_locale
-      current_url = "/#{::Refinery::I18n.current_frontend_locale}#{current_url}"
-    end
-
-    current_url
+    return link_url
+    #return link_url unless ::Refinery.i18n_enabled?
+    #
+    #current_url = link_url
+    #
+    #if current_url =~ %r{^/} && ::Refinery::I18n.current_frontend_locale != ::Refinery::I18n.default_frontend_locale
+    #  current_url = "/#{::Refinery::I18n.current_frontend_locale}#{current_url}"
+    #end
+    #
+    #current_url
   end
 
   def url_marketable
@@ -201,7 +202,7 @@ class Page < ActiveRecord::Base
   end
 
   def url_normal
-    {:controller => '/pages', :action => 'show', :path => nil, :id => to_param}
+    {:controller => '/pages', :action => 'show', :path => nil, :id => to_param, :subdomain => "#{I18n.locale}.corporate"}
   end
 
   def with_locale_param(url_hash)
