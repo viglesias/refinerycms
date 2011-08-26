@@ -1,4 +1,4 @@
-require 'globalize3'
+ require 'globalize3'
 
 class Page < ActiveRecord::Base
 
@@ -202,7 +202,8 @@ class Page < ActiveRecord::Base
   end
 
   def url_normal
-    {:controller => '/pages', :action => 'show', :path => nil, :id => to_param, :subdomain => "#{I18n.locale}.corporate"}
+    subdomain = I18n.locale.to_s == "en" ? "en.corporate" : "es.nosotros"
+    {:controller => '/pages', :action => 'show', :path => nil, :id => to_param, :subdomain => subdomain }
   end
 
   def with_locale_param(url_hash)
